@@ -1,5 +1,5 @@
 import pandas as pd
-from interpolacao import InterpolacaoLagrange
+from Lagrange import resolver
 
 # Caminho para o arquivo Excel
 arquivo_excel = 'Base de Dados.xlsx'
@@ -22,7 +22,7 @@ for xi, yi in pontos_conhecidos:
     print(f"xi = {xi}, yi = {yi}")
 
 # Instanciar a interpolação de Lagrange
-interpolacao_lagrange = InterpolacaoLagrange(pontos_conhecidos)
+interpolacao_lagrange = resolver(pontos_conhecidos)
 
 # Solicitar o ano ao usuário
 ano_usuario = int(input("Digite o ano para o qual deseja interpolar a população (ex: 2020): "))
