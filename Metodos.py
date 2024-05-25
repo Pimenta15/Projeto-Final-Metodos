@@ -2,39 +2,41 @@ import numpy as np
 
 class MetodoDireto:
     def __init__(self, A, b):
-        self.A = A
-        self.b = b
+        self.A = A.astype(np.float64)  # Garantir que A seja float64
+        self.b = b.astype(np.float64)  # Garantir que b seja float64
 
     def resolver(self):
         A = self.A.copy()
         b = self.b.copy()
         n = len(b)
 
-        # Eliminação de Gauss
         for i in range(n):
-            # Pivotamento parcial
-            max_row = max(range(i, n), key=lambda r: abs(A[r][i]))
-            if i != max_row:
-                A[[i, max_row]] = A[[max_row, i]]
-                b[i], b[max_row] = b[max_row], b[i]
+            # Pivot
+            max_row = np.argmax(np.abs(A[i:, i])) + i
+            if A[max_row, i] == 0:
+                raise ValueError("Matriz é singular e não pode ser resolvida.")
+            A[[i, max_row]] = A[[max_row, i]]
+            b[[i, max_row]] = b[[max_row, i]]
 
-            # Eliminar subdiagonal
-            for j in range(i+1, n):
-                ratio = A[j][i] / A[i][i]
-                A[j][i:] -= ratio * A[i][i:]
+            # Eliminação
+            for j in range(i + 1, n):
+                ratio = A[j, i] / A[i, i]
+                A[j, i:] -= ratio * A[i, i:]
                 b[j] -= ratio * b[i]
 
-        # Substituição regressiva
+        # Resolução do sistema triangular superior
         x = np.zeros(n)
-        for i in range(n-1, -1, -1):
-            x[i] = (b[i] - np.dot(A[i][i+1:], x[i+1:])) / A[i][i]
+        for i in range(n - 1, -1, -1):
+            x[i] = (b[i] - np.dot(A[i, i + 1:], x[i + 1:])) / A[i, i]
 
         return x
 
+import numpy as np
+
 class MetodoIterativo:
-    def __init__(self, A, b, max_iter=1000, tol=1e-10):
-        self.A = A
-        self.b = b
+    def __init__(self, A, b, max_iter=10000, tol=1e-10):
+        self.A = A.astype(np.float64)  # Garantir que A seja float64
+        self.b = b.astype(np.float64)  # Garantir que b seja float64
         self.max_iter = max_iter
         self.tol = tol
 
@@ -57,3 +59,4 @@ class MetodoIterativo:
             x = x_new.copy()
 
         raise ValueError("O método de Jacobi não convergiu")
+

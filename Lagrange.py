@@ -1,7 +1,7 @@
 import numpy as np
 import time
 
-class resolver:
+class resolverL:
     def __init__(self, pontos_conhecidos):
         self.pontos_conhecidos = pontos_conhecidos
 

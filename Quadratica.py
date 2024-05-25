@@ -2,7 +2,7 @@ import numpy as np
 import time
 from Metodos import MetodoDireto, MetodoIterativo
 
-class InterpolacaoQuadratica:
+class resolverQ:
     def __init__(self, pontos_conhecidos):
         self.pontos_conhecidos = pontos_conhecidos
 
@@ -32,7 +32,7 @@ class InterpolacaoQuadratica:
 
         a, b, c = coeficientes
         resultado = a * x**2 + b * x + c
-
+        time.sleep(1)
         end_time = time.time()  # Fim da medição do tempo
         tempo_execucao = end_time - start_time
 
