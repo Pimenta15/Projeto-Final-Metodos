@@ -1,6 +1,7 @@
 import numpy as np
 import time
-from Metodos import MetodoDireto, MetodoIterativo
+from Metodos import MetodoDireto
+
 
 class resolverQ:
     def __init__(self, pontos_conhecidos):

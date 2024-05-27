@@ -33,7 +33,7 @@ class MetodoDireto:
 
 
 
-class MetodoJacobi:
+class MetodoIterativo:
     def __init__(self, A, b, max_iter=50, tol=1e-2):
         self.A = A.astype(np.float64)  # Garantir que A seja float64
         self.b = b.astype(np.float64)  # Garantir que b seja float64
