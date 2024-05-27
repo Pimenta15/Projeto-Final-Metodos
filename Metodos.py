@@ -31,10 +31,10 @@ class MetodoDireto:
 
         return x
 
-import numpy as np
 
-class MetodoIterativo:
-    def __init__(self, A, b, max_iter=10000, tol=1e-10):
+
+class MetodoJacobi:
+    def __init__(self, A, b, max_iter=50, tol=1e-2):
         self.A = A.astype(np.float64)  # Garantir que A seja float64
         self.b = b.astype(np.float64)  # Garantir que b seja float64
         self.max_iter = max_iter
@@ -45,18 +45,29 @@ class MetodoIterativo:
         b = self.b
         n = len(b)
         x = np.zeros(n)
-        x_new = np.zeros(n)
-
-        for _ in range(self.max_iter):
+        
+        for iteration in range(self.max_iter):
+            x_old = x.copy()
             for i in range(n):
-                s1 = np.dot(A[i, :i], x[:i])
-                s2 = np.dot(A[i, i+1:], x[i+1:])
-                x_new[i] = (b[i] - s1 - s2) / A[i, i]
+                if A[i, i] == 0:
+                    raise ValueError(f"Elemento diagonal zero encontrado em A[{i},{i}], método não pode proceder.")
+                s1 = np.dot(A[i, :i], x_old[:i])  # Utiliza a estimativa anterior de x
+                s2 = np.dot(A[i, i+1:], x_old[i+1:])  # Utiliza a estimativa anterior de x
+                x[i] = (b[i] - s1 - s2) / A[i, i]
+            # Verificação de convergência
+            if np.linalg.norm(x - x_old, ord=np.inf) < self.tol:
+                print(f"Convergência alcançada após {iteration + 1} iterações.")
+                return x
 
-            if np.linalg.norm(x_new - x, ord=np.inf) < self.tol:
-                return x_new
+        print(f"Número máximo de iterações atingido ({self.max_iter}).")
+        return x  # Retorna a última iteração se não convergir
 
-            x = x_new.copy()
+# Exemplo de uso
+A = np.array([[3, 1, -1],
+              [1, 4, -2],
+              [-1, 1, 5]], dtype=np.float64)
+b = np.array([1, -5, 3], dtype=np.float64)
 
-        raise ValueError("O método de Jacobi não convergiu")
-
+metodo = MetodoJacobi(A, b)
+solucao = metodo.resolver()
+print("Solução:", solucao)

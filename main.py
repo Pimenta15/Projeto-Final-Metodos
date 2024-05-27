@@ -1,6 +1,8 @@
 import pandas as pd
 from Lagrange import resolverL
 from Quadratica import resolverQ
+from DiferencasDivididas import ResolverDD
+from DiferencasFinitas import ResolverDF
 
 # Caminho para o arquivo Excel
 arquivo_excel = 'Base de Dados.xlsx'
@@ -17,54 +19,86 @@ y = df['fecundidade'].values
 
 # Criar lista de pontos conhecidos
 pontos_conhecidos = list(zip(x, y))
-i = 0
+
 print("Pontos conhecidos:")
 for xi, yi in pontos_conhecidos:
-    print(f"x{i} = {xi}, yi = {yi}")
-    i = i+1
+    print(f"xi = {xi}, yi = {yi}")
 
-# Instanciar a interpolação de Lagrange
-interpolacao_lagrange = resolverL(pontos_conhecidos)
-# Solicitar o ano ao usuário
-ano_usuario = int(input("Digite o ano para o qual deseja interpolar a população (ex: 2004): "))
+# Função para obter os pontos para interpolação quadrática manualmente
+def obter_pontos_quadraticos_manual():
+    pontos = []
+    for i in range(3):
+        ano = int(input(f"Digite o ano do ponto {i + 1}: "))
+        fecundidade = float(input(f"Digite a fecundidade do ponto {i + 1}: "))
+        pontos.append((ano, fecundidade))
+    return pontos
 
-# Interpolar taxa de fecundidade para o ano solicitado
-previsao_fecundidade, tempo_execucao = interpolacao_lagrange.interpolar(ano_usuario)
+# Função para mostrar o menu e obter a escolha do usuário
+def mostrar_menu():
+    print("\nEscolha o método de interpolação:")
+    print("1. Lagrange")
+    print("2. Quadrática")
+    print("3. Diferenças Divididas")
+    print("4. Diferenças Finitas")
+    return int(input("Digite o número do método escolhido: "))
 
-# Exibir o resultado
-print("Interpolação por Lagrange")
-print(f"Para o ano {ano_usuario}:")
-print(f"Taxa de fecundidade estimada: {previsao_fecundidade:.2f}")
-print(f"Tempo de execução: {tempo_execucao:.6f} segundos")
-print("-------------------------------------------------------------------")
+# Solicitar método de interpolação e ano ao usuário
+metodo = mostrar_menu()
+ano_usuario = int(input("Digite o ano para interpolar: "))
 
-# Solicitar ao usuário para digitar 3 anos
-anos_usuario = []
-for i in range(3):
-    ano = int(input(f"Digite o ano {i+1}: "))
-    anos_usuario.append(ano)
+# Inicializar variáveis para os resultados
+resultados = {
+    'Método': [],
+    'Ano': [],
+    'Fecundidade Estimada': [],
+    'Tempo de Execução (s)': []
+}
 
-# Filtrar pontos conhecidos para incluir apenas os anos fornecidos pelo usuário
-pontos_conhecidos_filtrados = []
-for ponto in pontos_conhecidos:
-    if ponto[0] in anos_usuario:
-        pontos_conhecidos_filtrados.append(ponto)
+# Interpolação baseada no método escolhido
+if metodo == 1:
+    interpolacao = resolverL(pontos_conhecidos)
+    previsao_fecundidade, tempo_execucao = interpolacao.interpolar(ano_usuario)
+    resultados['Método'].append('Lagrange')
+    resultados['Ano'].append(ano_usuario)
+    resultados['Fecundidade Estimada'].append(previsao_fecundidade)
+    resultados['Tempo de Execução (s)'].append(tempo_execucao-1)
 
+elif metodo == 2:
+    pontos_quadraticos = obter_pontos_quadraticos_manual()
+    tipo_quadratica = input("Digite 'direto' para interpolação quadrática direta ou 'iterativo' para interpolação quadrática iterativa: ").strip().lower()
+    interpolacao = resolverQ(pontos_quadraticos)
+    previsao_fecundidade, tempo_execucao = interpolacao.interpolar(ano_usuario, tipo_quadratica)
+    resultados['Método'].append(f'Quadrática ({tipo_quadratica.capitalize()})')
+    resultados['Ano'].append(ano_usuario)
+    resultados['Fecundidade Estimada'].append(previsao_fecundidade)
+    resultados['Tempo de Execução (s)'].append(tempo_execucao-1)
 
-interpolacao_quadratica = resolverQ(pontos_conhecidos_filtrados)
-previsao_fecundidade, tempo_execucao = interpolacao_quadratica.interpolar(ano_usuario, "direto")
+elif metodo == 3:
+    interpolacao = ResolverDD(pontos_conhecidos)
+    previsao_fecundidade, tempo_execucao = interpolacao.interpolar(ano_usuario)
+    resultados['Método'].append('Diferenças Divididas')
+    resultados['Ano'].append(ano_usuario)
+    resultados['Fecundidade Estimada'].append(previsao_fecundidade)
+    resultados['Tempo de Execução (s)'].append(tempo_execucao-1)
 
-print("Interpolação por Quadratica de modo direto")
-print(f"Para o ano {ano_usuario}:")
-print(f"Taxa de fecundidade estimada: {previsao_fecundidade:.2f}")
-print(f"Tempo de execução: {tempo_execucao:.6f} segundos")
-print("-------------------------------------------------------------------")
+elif metodo == 4:
+    interpolacao = ResolverDF(pontos_conhecidos)
+    previsao_fecundidade, tempo_execucao = interpolacao.interpolar(ano_usuario)
+    resultados['Método'].append('Diferenças Finitas')
+    resultados['Ano'].append(ano_usuario)
+    resultados['Fecundidade Estimada'].append(previsao_fecundidade)
+    resultados['Tempo de Execução (s)'].append(tempo_execucao-1)
 
-interpolacao_quadratica = resolverQ(pontos_conhecidos_filtrados)
-previsao_fecundidade, tempo_execucao = interpolacao_quadratica.interpolar(ano_usuario, "iterativo")
+else:
+    print("Método de interpolação desconhecido.")
 
-print("Interpolação por Quadratica de modo iterativo")
-print(f"Para o ano {ano_usuario}:")
-print(f"Taxa de fecundidade estimada: {previsao_fecundidade:.2f}")
-print(f"Tempo de execução: {tempo_execucao:.6f} segundos")
-print("-------------------------------------------------------------------")
+# Imprimir resultados no console
+print("\nResultados:")
+for i in range(len(resultados['Método'])):
+    print(f"Método: {resultados['Método'][i]}")
+    print(f"Ano: {resultados['Ano'][i]}")
+    print(f"Fecundidade Estimada: {resultados['Fecundidade Estimada'][i]}")
+    print(f"Tempo de Execução (s): {resultados['Tempo de Execução (s)'][i]}")
+    print("-" * 30)
+
+print("Processo de interpolação concluído.")
