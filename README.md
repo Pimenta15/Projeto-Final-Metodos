@@ -16,6 +16,8 @@ Projeto final da disciplina de **Métodos Numéricos**. O programa lê uma séri
 | `DiferencasFinitas.py` | Polinômio de **Newton** com diferenças finitas (pontos igualmente espaçados) |
 | `Metodos.py` | Solvers de sistemas lineares: eliminação direta e método iterativo de Jacobi |
 
+> Na quadrática, a opção **iterativa** (Jacobi) não converge para esses dados: a matriz de Vandermonde formada pelos anos não é diagonalmente dominante. Use a opção **direta**.
+
 Lagrange, diferenças divididas e diferenças finitas geram o mesmo polinômio interpolador; por isso os três dão o mesmo valor (1,1708 para 2015), mudando apenas o custo do cálculo.
 
 ## Dados
