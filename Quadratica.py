@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from Metodos import MetodoDireto
+from Metodos import MetodoDireto, MetodoIterativo
 
 
 class resolverQ:
