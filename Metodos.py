@@ -63,11 +63,12 @@ class MetodoIterativo:
         return x  # Retorna a última iteração se não convergir
 
 # Exemplo de uso
-A = np.array([[3, 1, -1],
-              [1, 4, -2],
-              [-1, 1, 5]], dtype=np.float64)
-b = np.array([1, -5, 3], dtype=np.float64)
+if __name__ == "__main__":
+    A = np.array([[3, 1, -1],
+                  [1, 4, -2],
+                  [-1, 1, 5]], dtype=np.float64)
+    b = np.array([1, -5, 3], dtype=np.float64)
 
-metodo = MetodoJacobi(A, b)
-solucao = metodo.resolver()
-print("Solução:", solucao)
+    metodo = MetodoIterativo(A, b)
+    solucao = metodo.resolver()
+    print("Solução:", solucao)
